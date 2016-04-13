@@ -1,0 +1,17 @@
+Application\FormsBundle\Entity\Product:
+    type: entity
+    table: null
+    repositoryClass: Application\FormsBundle\Repository\ProductRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+        price:
+            type: float
+    lifecycleCallbacks: {  }

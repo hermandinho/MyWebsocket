@@ -1,0 +1,41 @@
+services:
+#    application_forms.example:
+#        class: Application\FormsBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]
+    application_forms.services.chat_service:
+        class: Application\FormsBundle\Services\ChatService
+        tags:
+           - { name: gos_web_socket.rpc}
+
+    application_forms.services.chat_topic:
+        class: Application\FormsBundle\Services\ChatTopic
+        arguments: ['@gos_web_socket.websocket.client_manipulator', '@gos_web_socket.client_storage']
+        tags:
+            - { name: gos_web_socket.topic }
+
+    application_forms.services.chat_periodic:
+        class: Application\FormsBundle\Services\ChatPeriodic
+        tags:
+            - { name: gos_web_socket.periodic }
+
+    pdo:
+        class: PDO
+        arguments:
+            dsn: "mysql:host=%database_host%;port=%database_port%;dbname=%database_name%"
+            user: '%database_user%'
+            password: '%database_password%'
+        calls:
+            - [ setAttribute, [3, 2] ] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
+
+    session.handler.pdo:
+        class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        arguments: ['@pdo', {lock_mode: 0}]
+
+    gos_web_socket_server.client_event.listener:
+        class: Application\FormsBundle\Listeners\ChatListener
+        tags:
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_error', method: onClientError }
+            - { name: kernel.event_listener, event: 'gos_web_socket.server_launched', method: onServerStart }
+            - { name: kernel.event_listener, event: 'gos_web_socket.client_rejected', method: onClientRejected }

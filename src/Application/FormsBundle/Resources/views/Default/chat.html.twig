@@ -1,0 +1,43 @@
+<html>
+    <head>
+
+    </head>
+<body>
+{{ ws_client() }}
+<div id="test">
+
+</div>
+{% block javascript %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+
+    <script>
+
+        //console.log(Routing.generate('application_forms_chat'));
+
+
+        var url = "ws://{{ gos_web_socket_server_host }}:{{ gos_web_socket_server_port }}";
+
+        //var url = "ws://localhost:80";
+        var webSocket = WS.connect(url);
+        webSocket.on("socket/connect", function(session){
+            //session is an Autobahn JS WAMP session.
+            session.subscribe("/chat", function(uri, payload){
+                document.getElementById('test').innerHTML += payload.msg+"<br>";
+                console.log("Received message", payload.msg);
+            });
+
+            //session.publish("/chat", "This is a message!");
+
+            console.log("Successfully Connected!");
+        });
+
+        webSocket.on("socket/disconnect", function(error){
+            //error provides us with some insight into the disconnection: error.reason and error.code
+
+            console.log("Disconnected for " + error.reason + " with code " + error.code);
+        }) ;
+    </script>
+{% endblock %}
+</body>
+</html>
