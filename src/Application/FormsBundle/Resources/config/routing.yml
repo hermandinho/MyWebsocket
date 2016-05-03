@@ -1,0 +1,10 @@
+application_forms_homepage:
+    path:     /forms
+    defaults: { _controller: ApplicationFormsBundle:Default:index }
+application_forms_chat:
+    path:     /chat
+    defaults: { _controller: ApplicationFormsBundle:Default:chat }
+
+application_forms_pm:
+    path:     /pm
+    defaults: { _controller: ApplicationFormsBundle:Default:pm }
